@@ -122,9 +122,18 @@ function bootstrap(options) {
     app.use(churchill(config.logger));
   }
 
+  // Add logger to the request so
+  // logger can be invoked anywhere
+  // in the request/response cycle
+  app.use((req, res, next) => {
+    req.logger = config.logger || logger(config);
+    next();
+  });
+
   if (config.middleware) {
     config.middleware.forEach(middleware => app.use(middleware));
   }
+
 
   serveStatic(app, config);
   settings(app, config);
